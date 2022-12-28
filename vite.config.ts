@@ -1,12 +1,23 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { createHtmlPlugin } from 'vite-plugin-html';
 
-const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
+const { getCommitInfo } = require('./gitUtil.js');
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    createHtmlPlugin({
+      minify: true,
+      inject: {
+        data: {
+          commitInfo: getCommitInfo(),
+        },
+      },
+    }),
+  ],
   define: {
-    __COMMIT_HASH__: '123',
+    'process.env.commitInfo': JSON.stringify(getCommitInfo()),
   },
 });
